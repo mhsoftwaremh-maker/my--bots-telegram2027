@@ -1,6 +1,24 @@
+from flask import Flask
+from threading import Thread
 from telegram import Update, Bot
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 import asyncio
+
+# -------------------------
+# 🔵 KEEP ALIVE WEB SERVER
+# -------------------------
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
 
 # -------------------------
 # تنظیمات
@@ -132,6 +150,9 @@ def main():
 
     # 👇 فقط پیام‌های دو تاپیک
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, warn_and_delete))
+
+    # 🔵 فعال کردن web server برای UptimeRobot
+    keep_alive()
 
     print("🤖 Bot started...")
     app.run_polling()
